@@ -12,19 +12,26 @@ angular.module('NarrowItDownApp',[])
         function NarrowItDownController(MenuSearchService)
         {
             var menu = this;
-            var  menu_items ;    
+            var  menu_items = [] ;    
            // var foundItems = [];           
-             
-            menu.searchItems = function () {           
-           menu_items =  MenuSearchService.getMatchedMenuItems(menu.search);
-                console.log("In function  " + menu.search);              
+           var promise;
+           
+           
+           menu.searchItems = function () { 
+           // modification
+                promise = MenuSearchService.getMatchedMenuItems(menu.search);
+                promise.then(function(response){
+                menu_items = response.data;
                 console.log("OK RESPONSE POSITIVE!");
-                console.log('menu_items',menu_items);
-             };
+                console.log('menu_items',menu_items);   
 
-                    
-      }
-       
+                })               
+                .catch(function(error)
+                {
+                     console.log("Something went terribly wrong.");   
+                }                             
+            )}
+         };
 
 // service
         MenuSearchService.$inject = ['$http','ApiBasePath'];
@@ -33,8 +40,7 @@ angular.module('NarrowItDownApp',[])
         {
             var service = this; 
              
-            var i;
-           
+            var i;           
             var myString = ""; 
             var foundItems =[];
             var processItems = [];
@@ -42,8 +48,10 @@ angular.module('NarrowItDownApp',[])
             service.getMatchedMenuItems = function(searchTerm)     
             {   
                  var count = 0 ;                  
-                console.log("Search Term : " + searchTerm);
-                var result = $http.get(ApiBasePath + "/menu_items.json")
+                 console.log("Search Term : " + searchTerm);       
+                
+                   return $http.get(ApiBasePath + "/menu_items.json")
+                   //return $http.get(ApiBasePath + "/maison.json")  //test
                     .then(function (response)
                     {
                        
@@ -55,31 +63,33 @@ angular.module('NarrowItDownApp',[])
                         processItems =response.data.menu_items;                       
                         for(i=0; i < processItems.length; i++)
                         {                           
-                           myString = processItems[i].description;                                                      
-                           //console.log("i: "+ i +" , "+myString.match(searchTerm));
-                           if (myString.match(searchTerm) != null)
-                           {                              
-                              foundItems.push(processItems[i]);
-                              console.log("Elements trouves :  ",foundItems[count] );
-                              count++;
-                              //console.log("longueur de foundItems.length: ", foundItems.length);
-                             console.log("count : "  + count);
-                           }                          
+                           myString = processItems[i].description;                                        
+                           //console.log("Valeur de myString : ", myString);                        
+                           if (searchTerm == null)
+                           {
+                              console.log("Valeur de myString : ", myString);                                
+                              console.log("Nothing Found, longueur de foundItems : " + foundItems.length);
+                           } 
+                           else
+                           {    
+                                if(myString.match(searchTerm) != null)
+                                {
+                                    foundItems.push(processItems[i]);
+                                    console.log("Elements trouves :  ",foundItems[count] );
+                                    count++;                              
+                                   // console.log("count : "  + count);
+                                } 
+                                console.log("count : "  + count);
+                           }                  
 
-                        }
+                        } // END Processing                  
+                         
+                         return foundItems; 
+                         
+                    });                                                  
+            }; // End service
 
-                          return response.data;  
-                    },
-                    function (response)
-                    {
-                         // this callback will be called asynchronously if an error occurs or server returns response with an error status.
-                         console.log("FAIL");
-                    });        
-                //return foundItems;
-                //return result;                 
-            };
-
-        }
+        } 
 
 })();
 

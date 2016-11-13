@@ -4,33 +4,70 @@
 angular.module('NarrowItDownApp',[])
 .controller('NarrowItDownController',NarrowItDownController)
 .service('MenuSearchService',MenuSearchService)
+.directive('foundItems',foundItemsDirective)
 .constant('ApiBasePath',"https://davids-restaurant.herokuapp.com/");
+
 
 //Support DI
         NarrowItDownController.$inject=['MenuSearchService'];
 
         function NarrowItDownController(MenuSearchService)
         {
-            var menu = this;
-            var  menu_items = [] ;    
-           // var foundItems = [];           
-           var promise;
+            var menu = this;           
+            var found = [];           
+            var promise;
            
            
            menu.searchItems = function () { 
            // modification
                 promise = MenuSearchService.getMatchedMenuItems(menu.search);
+                console.log("promise",promise);
                 promise.then(function(response){
-                menu_items = response.data;
+                console.log("response",response);
+                found = response;
+                menu.found = found;
                 console.log("OK RESPONSE POSITIVE!");
-                console.log('menu_items',menu_items);   
+                console.log("found : ",found);   
 
                 })               
                 .catch(function(error)
                 {
                      console.log("Something went terribly wrong.");   
                 }                             
-            )}
+            )};
+
+            // Remove item
+            menu.remove = function(itemIndex){
+                 console.log("'this' is: ", this);           
+                found.splice(itemIndex,1);
+                menu.found = found;
+                console.log("Invoke remove");
+            }
+         };
+         // directive
+         function foundItemsDirective(){             
+             var ddo = {
+                 restrict:'E',
+                 templateUrl:'foundListMenu.html',
+
+                 scope :{
+                     foundItems: '<',
+                 onRemove:'&'
+
+                 },
+                 
+             //},
+             controller: foundItemsDirectiveCtrl,
+             controllerAs: 'list',
+             bindToController: true
+
+         };
+
+         return ddo;
+         }
+
+         function foundItemsDirectiveCtrl(){
+             var list = this;
          };
 
 // service
@@ -89,8 +126,8 @@ angular.module('NarrowItDownApp',[])
                     });                                                  
             }; // End service
 
-        } 
-
+       } 
+        
 })();
 
 

@@ -1,0 +1,5 @@
+                              <h3>List of Menu</h3>
+       <ul><li ng-repeat="item in list.foundItems">{{item.name}},&nbsp; {{item.short_name}},&nbsp; {{item.description}}
+       <button class="btn btn-primary" ng-click="list.onRemove({index:$index});">Don't want this one</button></li></ul>     
+
+       <div class="emptyMessage" ng-if="list.foundItems.length === 0">Nothing found.</div>

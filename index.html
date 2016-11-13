@@ -35,11 +35,13 @@
     <div class="form-group narrow-button">
       <button class="btn btn-primary" ng-click="menu.searchItems();">Narrow It Down For Me!</button>
     </div>
+    <h3 ng-if="menu.NothingFound"></h3>
      <!--&nbsp; input : {{menu.search}} -->
      &nbsp;  
      
     <!-- found-items should be implemented as a component -->
     <found-items found-items="menu.found" on-remove="menu.remove(index)"></found-items>
+     <div class="emptyMessage" ng-if="menu.found.length === 0 && menu.NothingFound == true">Nothing found.</div>     
   </div>
 
 </body>

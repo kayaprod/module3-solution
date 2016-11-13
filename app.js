@@ -15,11 +15,13 @@ angular.module('NarrowItDownApp',[])
         {
             var menu = this;           
             var found = [];           
-            var promise;
-           
-           
+            var promise;           
+           menu.NothingFound = true; 
+
+           console.log("boolean", menu.NothingFound); 
            menu.searchItems = function () { 
-           // modification
+               // modification
+               menu.NothingFound = true;             
                 promise = MenuSearchService.getMatchedMenuItems(menu.search);
                 console.log("promise",promise);
                 promise.then(function(response){
@@ -37,11 +39,13 @@ angular.module('NarrowItDownApp',[])
             )};
 
             // Remove item
-            menu.remove = function(itemIndex){
-                 console.log("'this' is: ", this);           
+           menu.remove = function(itemIndex){
+                menu.NothingFound = false;                
+                console.log("'this' is: ", this);           
                 found.splice(itemIndex,1);
                 menu.found = found;
                 console.log("Invoke remove");
+                console.log("valeur NothingFound :", menu.NothingFound);
             }
          };
          // directive
@@ -70,7 +74,7 @@ angular.module('NarrowItDownApp',[])
              var list = this;
          };
 
-// service
+    // service
         MenuSearchService.$inject = ['$http','ApiBasePath'];
 
         function MenuSearchService($http,ApiBasePath)
@@ -101,11 +105,12 @@ angular.module('NarrowItDownApp',[])
                         for(i=0; i < processItems.length; i++)
                         {                           
                            myString = processItems[i].description;                                        
-                           //console.log("Valeur de myString : ", myString);                        
+                           //console.log("Length of myString : ", myString);                        
                            if (searchTerm == null)
                            {
+                              
                               console.log("Valeur de myString : ", myString);                                
-                              console.log("Nothing Found, longueur de foundItems : " + foundItems.length);
+                              console.log("Nothing Found, length of foundItems : " + foundItems.length);
                            } 
                            else
                            {    
@@ -113,8 +118,8 @@ angular.module('NarrowItDownApp',[])
                                 {
                                     foundItems.push(processItems[i]);
                                     console.log("Elements trouves :  ",foundItems[count] );
-                                    count++;                              
-                                   // console.log("count : "  + count);
+                                    count++;               
+                                   
                                 } 
                                 console.log("count : "  + count);
                            }                  
